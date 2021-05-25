@@ -71,7 +71,6 @@ print (create_query)
 
 # # Вставляем содержимое
 todb_insert_query = (f'INSERT INTO `Anketa.Question6` VALUES ({table_rows})')
-print (todb_insert_query)
 cur_serv.execute(todb_insert_query)
 # #Закрываем соединение
 cur_serv.close()
