@@ -2,43 +2,78 @@ from numpy import NaN, column_stack, inner
 import numpy as np
 import pandas as pd
 from pandas.core import frame
-# import MySQLdb
-# from pandas.core.dtypes.missing import isna
-# connection_params_sql = {'host': '10.144.198.132',
-#                          'user': "mon_report_bti",
-#                          'passwd': "Report_112233",
-#                          'charset': "utf8",
-#                          'db': "test"}
+import re
+from sqlalchemy import create_engine
 
+engine = create_engine('mysql://mon_report_bti:Report_112233@10.144.198.132/test?charset=utf8mb4',encoding='utf8')
+#engine = create_engine(URL(connection_params_sql), encod)
 input_file = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_все_сотрудники.xlsx"
+column_logins = 'I'                                                                                         #Столбец логинов
+column_question = []                                                                                        #Массив вариантов ответов
+column_question.append ('AI:BJ')
+column_question.append ('BK:BT')
+column_question.append ('BV:CO')
+column_question.append ('CP:DQ')
+column_question.append ('DR:EA')
+column_question.append ('EC:EV')
+column_question.append ('EW:FX')
+column_question.append ('FY:GF')
+column_question.append ('GJ:HK')
+column_question.append ('HT:JX')
+column_question.append ('JY:LD')
+column_question.append ('LE:MI')
+column_question.append ('MJ:OQ')
+column_question.append ('OR:PO')
+column_question.append ('PP:RH')
+column_question.append ('AI:BJ')
+column_question.append ('RI:SY')
+column_question.append ('SZ:UE')
+column_question.append ('UF:VI')
+column_question.append ('VJ:WM')
+column_question.append ('WN:XW')
+column_question.append ('XX:ZY')
+column_question.append ('ZZ:ABG')
+column_question.append ('ABH:ACL')
+column_question.append ('ACM:ADX')
+column_question.append ('ADZ:AER')
+column_question.append ('AEZ:AFA')
 
-column_logins = 'I'
-#column_queue6 = 'SE:SI'
-column_queue6 = 'SD:SI' #тестовая колонка
+logins = (pd.read_excel(input_file, usecols=column_logins,header=2, skiprows=0,names=['logins']))          #Получаем логины
 
-logins = (pd.read_excel(input_file, usecols=column_logins,header=2, skiprows=0,names=['blogins']))          #Получаем логины
-que6 = (pd.read_excel(input_file, usecols=column_queue6, header=2,skiprows=0))
-logins.columns = ['logins123']
-#que6 = que6.values.tolist()
-items = que6.columns.values.tolist()
-split_items = []
-for i in range(len(items)):
-    znak = items[i]
-    for item in items:
-        if znak.upper() == item[:-2].upper():
-            que6[znak] = que6[znak].combine_first(que6[item])
-            del que6[item]
-items = que6.columns.values.tolist()                                                                        # Обновляем массив, так как могли быть удалены столбцы
-# que6['#ospf'] = que6['#ospf'].combine_first(que6["#OSPF.1"])
-que6 = (que6.replace('.*',1,regex=True))
-que6 = (que6.fillna(0))
-que6 = (que6.astype(int))
-frames = pd.concat([logins,que6], axis=1).drop(index=[0])
-print (frames)
-#print (que6.columns)
-#print (que6)
-#print(logins)
+def InsertQuestionIntoDB(question_coords, tablename):
+    question = (pd.read_excel(input_file, usecols=question_coords, header=2,skiprows=0))
+    # Объединяем одинаковые столбцы
+    items = question.columns.values.tolist()
+    for i in range(len(items)):
+        znak = items[i]
+        for item in items:
+            if znak.upper() == item[:-2].upper():
+                question[znak] = question[znak].combine_first(question[item])
+                del question[item]
+    # Удаляем лишние символы в заголовках столбцов
+    items = question.columns.values.tolist()                                                                        # Обновляем массив, так как могли быть удалены столбцы
+    for item in range(len(items)):                                                                              # Проверка по регулярке на окончания типа .[0-9$]
+        if re.search('\.[0-9]$', items[item]): 
+            items[item] = items[item][:-2]
+        items[item] = items[item][:64]                                                                          # Обрезаем имя столбца до 64 символов
+    question.columns = items
+    # Устанавливаем наличие ответов как 1, отсутствие - 0
+    question = (question.replace('.*',1,regex=True))
+    question = (question.fillna(0))
+    question = (question.astype(int))
+    # Склеиваем с логинами
+    frames = pd.concat([logins,question], axis=1).drop(index=[0])
+    # Кладём в бд, или ложим, или складываем, или слаживаем, пох
+    frames.to_sql(tablename,con=engine)
+    pass
 
 
+# table_name = 'Anketa.Question'
+first_que_number = 6
 
-
+for question in column_question:
+    table_name = 'Anketa.Question'
+    table_name = table_name + str(first_que_number)
+    InsertQuestionIntoDB(question,table_name)
+    first_que_number += 1
+    print(table_name,' импортирована.')

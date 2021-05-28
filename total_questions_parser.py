@@ -13,7 +13,7 @@ input_columns_que = []
 
 que6_coords = 'O:AH'
 
-input_columns_que.append (pd.read_excel(input_file, usecols=que6_coords, nrows=1 ,skiprows=1))
+# input_columns_que.append (pd.read_excel(input_file, usecols=que6_coords, nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="AI:BJ", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="BK:BT", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="BV:CO", nrows=1 ,skiprows=1))
@@ -23,14 +23,14 @@ input_columns_que.append (pd.read_excel(input_file, usecols=que6_coords, nrows=1
 # input_columns_que.append (pd.read_excel(input_file, usecols="EW:FX", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="FY:GF", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="GJ:HK", nrows=1 ,skiprows=1))
-# input_columns_que.append (pd.read_excel(input_file, usecols="HT:JX", nrows=1 ,skiprows=1))
+#input_columns_que.append (pd.read_excel(input_file, usecols="HT:JX", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="JY:LD", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="LE:MI", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="MJ:OQ", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="OR:PO", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="PP:RH", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="AI:BJ", nrows=1 ,skiprows=1))
-# input_columns_que.append (pd.read_excel(input_file, usecols="RI:SY", nrows=1 ,skiprows=1))
+input_columns_que.append (pd.read_excel(input_file, usecols="RI:SY", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="SZ:UE", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="UF:VI", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="VJ:WM", nrows=1 ,skiprows=1))
@@ -41,8 +41,6 @@ input_columns_que.append (pd.read_excel(input_file, usecols=que6_coords, nrows=1
 # input_columns_que.append (pd.read_excel(input_file, usecols="ACM:ADX", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="ADZ:AER", nrows=1 ,skiprows=1))
 # input_columns_que.append (pd.read_excel(input_file, usecols="AEZ:AFA", nrows=1 ,skiprows=1))
-# table_columns = input_columns_que12.values.tolist()
-# print (table_columns)
 
 # Приводим в порядок заголовки, парсим их
 def parse_columns(raw_columns):
@@ -76,8 +74,8 @@ for i in range(len(input_columns_que)):
     table_name +=str(question_number)
     create_query = (f"CREATE TABLE IF NOT EXISTS `test`.`{table_name}` ({input_columns_que[i]});")
     question_number +=1
-    print(create_query)
-    #cur_serv._query(create_query)
+    #print(create_query)
+    cur_serv._query(create_query)
 
 
 
