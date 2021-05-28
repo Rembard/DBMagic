@@ -1,72 +1,12 @@
 from numpy import NaN, column_stack, inner
 import numpy as np
 import pandas as pd
-from pandas.core import frame
 import re
 from sqlalchemy import create_engine
+from connection_params import db_creds,db_charset
+from file_to_parse import input_file,column_logins,column_question,table_name_example,first_table_number
 
-engine = create_engine('mysql://mon_report_bti:Report_112233@10.144.198.132/test?charset=utf8mb4',encoding='utf8')
-#engine = create_engine(URL(connection_params_sql), encod)
-input_file = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_руководители.xlsx"
-column_logins = 'L'                                                                                         #Столбец логинов
-column_question = []                                                                                        #Массив вариантов ответов
-# column_question.append ('AI:BJ')
-# column_question.append ('BK:BT')
-# column_question.append ('BV:CO')
-# column_question.append ('CP:DQ')
-# column_question.append ('DR:EA')
-# column_question.append ('EC:EV')
-# column_question.append ('EW:FX')
-# column_question.append ('FY:GF')
-# column_question.append ('GJ:HK')
-# column_question.append ('HT:JX')
-# column_question.append ('JY:LD')
-# column_question.append ('LE:MI')
-# column_question.append ('MJ:OQ')
-# column_question.append ('OR:PO')
-# column_question.append ('PP:RH')
-# column_question.append ('AI:BJ')
-# column_question.append ('RI:SY')
-# column_question.append ('SZ:UE')
-# column_question.append ('UF:VI')
-# column_question.append ('VJ:WM')
-# column_question.append ('WN:XW')
-# column_question.append ('XX:ZY')
-# column_question.append ('ZZ:ABG')
-# column_question.append ('ABH:ACL')
-# column_question.append ('ACM:ADX')
-# column_question.append ('ADZ:AER')
-# column_question.append ('AEZ:AFA')
-
-column_question.append ('P:AI')
-column_question.append ('AJ:BK')
-column_question.append ('BL:BS')
-column_question.append ('BT:BU')
-column_question.append ('BW:CP')
-column_question.append ('CQ:DR')
-column_question.append ('DS:DZ')
-column_question.append ('EA:EB')
-column_question.append ('ED:EW')
-column_question.append ('EX:FY')
-column_question.append ('FZ:GI')
-column_question.append ('GK:HL')
-column_question.append ('HU:JY')
-column_question.append ('JZ:LE')
-column_question.append ('LF:MJ')
-column_question.append ('MK:OR')
-column_question.append ('OS:PP')
-column_question.append ('PQ:TB')
-column_question.append ('TC:US')
-column_question.append ('UT:VY')
-column_question.append ('VZ:XC')
-column_question.append ('XD:YG')
-column_question.append ('YH:ZQ')
-column_question.append ('ZR:ABS')
-column_question.append ('ABT:ADA')
-column_question.append ('ADB:AEF')
-column_question.append ('AEG:AFR')
-column_question.append ('AFT:AGH')
-
+engine = create_engine(db_creds,encoding=db_charset)
 
 logins = (pd.read_excel(input_file, usecols=column_logins,header=2, skiprows=0,names=['logins']))          #Получаем логины
 
@@ -94,16 +34,11 @@ def InsertQuestionIntoDB(question_coords, tablename):
     # Склеиваем с логинами
     frames = pd.concat([logins,question], axis=1).drop(index=[0])
     # Кладём в бд, или ложим, или складываем, или слаживаем, пох
-    frames.to_sql(tablename,con=engine)
+    frames.to_sql(tablename,con=engine,if_exists='replace')
     pass
 
-
-# table_name = 'Anketa.Question'
-first_que_number = 6
-
 for question in column_question:
-    table_name = 'Anketa.Question.Boss'
-    table_name = table_name + str(first_que_number)
+    table_name = table_name_example + str(first_table_number)
     InsertQuestionIntoDB(question,table_name)
-    first_que_number += 1
+    first_table_number += 1
     print(table_name,' импортирована.')
