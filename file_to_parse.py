@@ -1,68 +1,104 @@
-input_file = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_руководители.xlsx"
-
-#DB name table vars
-table_name_example = 'Anketa.Question.Boss'
-first_table_number = 6                                                                                      #С какого номера именовать таблицы
-
-# File structure Результаты_руководители
-column_logins = 'L'                                                                                         #Столбец логинов
-column_question = []
-column_question.append ('P:AI')
-column_question.append ('AJ:BK')
-column_question.append ('BL:BS')
-column_question.append ('BT:BU')
-column_question.append ('BW:CP')
-column_question.append ('CQ:DR')
-column_question.append ('DS:DZ')
-column_question.append ('EA:EB')
-column_question.append ('ED:EW')
-column_question.append ('EX:FY')
-column_question.append ('FZ:GI')
-column_question.append ('GK:HL')
-column_question.append ('HU:JY')
-column_question.append ('JZ:LE')
-column_question.append ('LF:MJ')
-column_question.append ('MK:OR')
-column_question.append ('OS:PP')
-column_question.append ('PQ:TB')
-column_question.append ('TC:US')
-column_question.append ('UT:VY')
-column_question.append ('VZ:XC')
-column_question.append ('XD:YG')
-column_question.append ('YH:ZQ')
-column_question.append ('ZR:ABS')
-column_question.append ('ABT:ADA')
-column_question.append ('ADB:AEF')
-column_question.append ('AEG:AFR')
-column_question.append ('AFT:AGH')
-
-# File parse Результаты_все_сотрудники
-# column_logins = 'I'                                                                                         #Столбец логинов
+# # File structure Результаты_руководители
+# input_file = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_руководители.xlsx"
+# #DB name table vars
+# table_name_example = 'questioning.chief.question'
+# first_table_number = 6                                                                                      #С какого номера именовать таблицы
+# column_logins = 'L'                                                                                         #Столбец логинов
 # column_question = []
-# column_question.append ('AI:BJ')
-# column_question.append ('BK:BT')
-# column_question.append ('BV:CO')
-# column_question.append ('CP:DQ')
-# column_question.append ('DR:EA')
-# column_question.append ('EC:EV')
-# column_question.append ('EW:FX')
-# column_question.append ('FY:GF')
-# column_question.append ('GJ:HK')
-# column_question.append ('HT:JX')
-# column_question.append ('JY:LD')
-# column_question.append ('LE:MI')
-# column_question.append ('MJ:OQ')
-# column_question.append ('OR:PO')
-# column_question.append ('PP:RH')
-# column_question.append ('AI:BJ')
-# column_question.append ('RI:SY')
-# column_question.append ('SZ:UE')
-# column_question.append ('UF:VI')
-# column_question.append ('VJ:WM')
-# column_question.append ('WN:XW')
-# column_question.append ('XX:ZY')
-# column_question.append ('ZZ:ABG')
-# column_question.append ('ABH:ACL')
-# column_question.append ('ACM:ADX')
-# column_question.append ('ADZ:AER')
-# column_question.append ('AEZ:AFA')
+# column_question.append ('P:AI')         #Отметьте функции, выполняемые сотрудником на текущей должности, в направлении Мониторинг. (Матрица)
+# column_question.append ('AJ:BK')        #Отметьте функции, выполняемые сотрудником на текущей должности, в направлении Управление. (Матрица)
+# column_question.append ('BL:BS')        #Отметьте функции, выполняемые сотрудником на текущей должности, в направлении Формирование. (Матрица)
+# column_question.append ('BT:BU')        #Отметьте функции, выполняемые сотрудником на текущей должности, в направлении Прочее. (Матрица)
+# column_question.append ('BW:CP')        #В какой из функций, по вашему мнению, сотрудник обладает уникальными и экспертными знаниями в направлении Мониторинг? (Матрица)
+# column_question.append ('CQ:DR')        #В какой из функций, по вашему мнению, сотрудник обладает уникальными и экспертными знаниями в направлении Управление? (Матрица)
+# column_question.append ('DS:DZ')        #В какой из функций, по вашему мнению, сотрудник обладает уникальными и экспертными знаниями в направлении Формирование? (Матрица)
+# column_question.append ('EA:EB')        #В какой из функций, по вашему мнению, сотрудник обладает уникальными и экспертными знаниями в направлении Прочее? (Матрица)
+# column_question.append ('ED:EW')        #В каком из направлений, по вашему мнению, сотрудник может/хочет развиваться в ближайшие 3 года?Направление Мониторинг (Матрица)
+# column_question.append ('EX:FY')        #В каком из направлений, по вашему мнению, сотрудник может/хочет развиваться в ближайшие 3 года?Направление Управление (Матрица)
+# column_question.append ('FZ:GI')        #В каком из направлений, по вашему мнению, сотрудник может/хочет развиваться в ближайшие 3 года?Направление Формирование (Матрица)
+# column_question.append ('GK:HL')        #Что из перечисленного получается у сотрудника лучше всего? Выберите 7 наиболее значимых его умений. (Множественный выбор)
+# column_question.append ('HU:JY')        #В последующих 7 вопросах на данной странице отметьте самые ключевые навыки и профессиональные компетенции сотрудника по направлению мониторинга (всего не более 15 навыков).Мониторинг. ОДС (Множественный выбор)
+# column_question.append ('JZ:LE')        #Мониторинг. IPTV и телематика (Множественный выбор)
+# column_question.append ('LF:MJ')        #Мониторинг. Транспорт (Множественный выбор)
+# column_question.append ('MK:OR')        #Мониторинг. Телефония (Множественный выбор)
+# column_question.append ('OS:PP')        #Мониторинг. O2O (Множественный выбор)
+# column_question.append ('PQ:TB')        #Мониторинг. СЖО (Множественный выбор)
+# column_question.append ('TC:US')        #В последующих 6 вопросах на данной странице отметьте самые ключевые навыки и профессиональные компетенции сотрудника по направлению управления (всего не более 20 навыков).Управление. СПД (Множественный выбор)
+# column_question.append ('UT:VY')        #Управление. Транспорт (Множественный выбор)
+# column_question.append ('VZ:XC')        #Управление. ТВ (Множественный выбор)
+# column_question.append ('XD:YG')        #Управление. Сервера и СХД (Множественный выбор)
+# column_question.append ('YH:ZQ')        #Управление. Телематика (Множественный выбор)
+# column_question.append ('ZR:ABS')       #Управление. Телефония (Множественный выбор)
+# column_question.append ('ABT:ADA')      #В последующих 3 вопросах на данной странице отметьте самые ключевые навыки и профессиональные компетенции сотрудника по направлению формирования, сервисов и РНР (всего не более 20 навыков).Управление. РНР (Множественный выбор)
+# column_question.append ('ADB:AEF')      #Управление. Формирование  (Множественный выбор)
+# column_question.append ('AEG:AFR')      #Перечислите информационные системы, которыми сотрудник регулярно пользуется при выполнении своих функций (Множественный выбор)
+# column_question.append ('AFT:AGH')      #Перечислите операционные системы, программное обеспечение, языки программирования в которых  сотрудник обладает экпертными навыками и регулярно использует в работе (Множественный выбор)
+
+# # # Множественный ответ по шкале от 1 до 7 (без преобразования в бинарное)
+# column_questions_answer_rpg_style = 'HM:HT'       #Какие характеристики из предложенных выражены в сотруднике в большей, а какие в меньшей степени? Проранжируйте от 1 до 8, где 1- максимально выраженная характеристика, а 8 - минимально выраженная характеристика. Используйте для этого стрелочки справа. (Ранжирование)
+# # # Ответы в свободной форме
+# column_questions_one_answer = []
+# column_questions_one_answer.append ('BV')   #Если сотрудник выполняет функции, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+# column_questions_one_answer.append ('EC')   #Если сотрудник обладает уникальными знаниями в каких-то других функциях, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+# column_questions_one_answer.append ('GJ')   #Если вы видите развитие сотрудника в других функциях, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+# column_questions_one_answer.append ('AFS')   #Если сотрудник пользуется другими информационными системами при выполнении своих функций, перечислите их через запятую. (Свободный ответ)
+# column_questions_one_answer.append ('AGJ')  #Приходилось ли сотруднику выступать в роли наставника/ментора? как он с этим справлялся? (Одиночный выбор)
+# column_questions_one_answer.append ('AGK')  #Кем вы видите сотрудника через 3 года (Одиночный выбор)
+
+
+
+
+
+# File structure Результаты_все_сотрудники
+input_file = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_все_сотрудники.xlsx"
+column_logins = 'I'                                                                                         #Столбец логинов
+#DB name table vars
+table_name_example = 'questioning.staff.question'
+first_table_number = 6
+column_question = []
+column_question.append ('O:AH')        #Отметьте функции, выполняемые вами на текущей должности в направлении Мониторинг. (Матрица)
+column_question.append ('AI:BJ')    #Отметьте функции, выполняемые вами на текущей должности в направлении Управление. (Матрица)
+column_question.append ('BK:BT')    #Отметьте функции, выполняемые вами на текущей должности в направлении Формирование. (Матрица)
+column_question.append ('BV:CO')    #В какой из функций, по вашему мнению, вы обладаете уникальными и экспертными знаниями в направлении Мониторинг? (Матрица)
+column_question.append ('CP:DQ')    #В какой из функций, по вашему мнению, вы обладаете уникальными и экспертными знаниями в направлении Управление? (Матрица)
+column_question.append ('DR:EA')    #В какой из функций, по вашему мнению, вы обладаете уникальными и экспертными знаниями в направлении Формирование? (Матрица)
+column_question.append ('EC:EV')    #В каком из направлений вы готовы развиваться в ближайшие 3 года?Направление Мониторинг (Матрица)
+column_question.append ('EW:FX')    #В каком из направлений вы готовы развиваться в ближайшие 3 года?Направление Управление (Матрица)
+column_question.append ('FY:GF')    #В каком из направлений вы готовы развиваться в ближайшие 3 года?Направление Формирование (Матрица)
+column_question.append ('GG:GH')    #В каком из направлений вы готовы развиваться в ближайшие 3 года?Направление Прочее (Матрица)
+column_question.append ('GJ:HK')    #Что из перечисленного получается у вас лучше всего? Выберите 7 наиболее значимых своих умений.  (Множественный выбор)
+column_question.append ('HT:JX')    #В последующих 7 вопросах на данной странице отметьте ваши самые ключевые навыки и профессиональные компетенции по направлению мониторинга (всего не более 15 навыков).Мониторинг. ОДС (Множественный выбор)
+column_question.append ('JY:LD')    #Мониторинг. IPTV и телематика (Множественный выбор)
+column_question.append ('LE:MI')    #Мониторинг. Транспорт (Множественный выбор)
+column_question.append ('MJ:OQ')    #Мониторинг. Телефония (Множественный выбор)
+column_question.append ('OR:PO')    #Мониторинг. O2O (Множественный выбор)
+column_question.append ('PP:RH')    #Мониторинг. СЖО (Множественный выбор)
+column_question.append ('RI:SY')    #В последующих 6 вопросах на данной странице отметьте ваши самые ключевые навыки и профессиональные компетенции по направлению управления (всего не более 20 навыков).Управление. СПД (Множественный выбор)
+column_question.append ('SZ:UE')    #Управление. Транспорт (Множественный выбор)
+column_question.append ('UF:VI')    #Управление. ТВ (Множественный выбор)
+column_question.append ('VJ:WM')    #Управление. Сервера и СХД (Множественный выбор)
+column_question.append ('WN:XW')    #Управление. Телематика (Множественный выбор)
+column_question.append ('XX:ZY')    #Управление. Телефония (Множественный выбор)
+column_question.append ('ZZ:ABG')   #В последующих 3 вопросах на данной странице отметьте ваши самые ключевые навыки и профессиональные компетенции по направлению формирования, сервисов и РНР (всего не более 20 навыков).Управление. РНР (Множественный выбор)
+column_question.append ('ABH:ACL')  #Управление. Формирование  (Множественный выбор)
+column_question.append ('ACM:ADX')  #Перечислите информационные системы, которыми вы регулярно пользуетесь при выполнении своих функций. (Множественный выбор)
+column_question.append ('AEU')      #Есть ли у вас навыки программирования/автоматизации процессов?  (Одиночный выбор)
+column_question.append ('ADZ:AER')  #Перечислите операционные системы, программное обеспечение, языки программирования, которые вы регулярно используете в работе. (Множественный выбор)
+column_question.append ('AEZ:AFA')  #
+
+# Множественный ответ по шкале от 1 до 7 (без преобразования в бинарное)
+column_questions_answer_rpg_style = 'HL:HS'       #Какие характеристики из предложенных выражены в вас в большей, а какие в меньшей степени? Проранжируйте от 1 до 8, где 1- максимально выраженная характеристика, а 8 - минимально выраженная характеристика. Используйте для этого стрелочки справа. (Ранжирование)
+# Ответы в свободной форме
+column_questions_one_answer = []
+column_questions_one_answer.append ('BU')   #Если вы выполняете функции, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+column_questions_one_answer.append ('EB')   #Если вы обладаете уникальными знаниями в каких-то других функциях, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+column_questions_one_answer.append ('GI')   #Если вы планируете развитие в  других функциях, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+column_questions_one_answer.append ('ADY')  #Если вы пользуетесь другими информационными системами, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+column_questions_one_answer.append ('AES')  #Если вы пользуетесь другими операционными системами, программным обеспечением, языками программирования, которые не входят в выше перечисленные, укажите их через запятую. (Свободный ответ)
+column_questions_one_answer.append ('AET')  #Приходилось ли вам выступать в роли наставника/ментора?  (Одиночный выбор)
+column_questions_one_answer.append ('AEV')  #Опишите в свободной форме проекты или задачи, которые приходилось реализовывать. (Свободный ответ)
+column_questions_one_answer.append ('AEW')  #Опишите стек технологий, которым владеете. (Свободный ответ)
+column_questions_one_answer.append ('AEX')  #Кем вы видите себя через 3 года  (Одиночный выбор)
+column_questions_one_answer.append ('AEY')  #Какой формат работы для вас был бы наиболее подходящим? (Одиночный выбор)
+column_questions_one_answer.append ('AFB')  #Если на предыдущий вопрос вы ответили "да", укажите срок, в течении которого вы готовы к переезду (в месяцах). (Одиночный выбор)
+column_questions_one_answer.append ('AFC')  #Укажите желаемый средний месячный доход по году, включая все премии и надбавки (на руки) (Свободный ответ)

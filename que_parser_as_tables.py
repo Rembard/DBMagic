@@ -4,10 +4,9 @@ import pandas as pd
 import re
 from sqlalchemy import create_engine
 from connection_params import db_creds,db_charset
-from file_to_parse import input_file,column_logins,column_question,table_name_example,first_table_number
+from file_to_parse import input_file,column_logins,column_question,column_questions_answer_rpg_style,column_questions_one_answer,table_name_example,first_table_number
 
 engine = create_engine(db_creds,encoding=db_charset)
-
 logins = (pd.read_excel(input_file, usecols=column_logins,header=2, skiprows=0,names=['logins']))          #Получаем логины
 
 def InsertQuestionIntoDB(question_coords, tablename):
@@ -35,10 +34,29 @@ def InsertQuestionIntoDB(question_coords, tablename):
     frames = pd.concat([logins,question], axis=1).drop(index=[0])
     # Кладём в бд, или ложим, или складываем, или слаживаем, пох
     frames.to_sql(tablename,con=engine,if_exists='replace')
+    # print (frames)
     pass
 
+def InsertSingleAnswerQueIntoDB(question_coords, tablename):
+    single_answer_question = (pd.read_excel(input_file, usecols=question_coords, header=2,skiprows=0,names=['answer']))
+    result_table = pd.concat([logins,single_answer_question], axis=1).drop(index=[0])
+    result_table.to_sql(tablename,con=engine,if_exists='replace')
+    # print (result_table)
+    
 for question in column_question:
     table_name = table_name_example + str(first_table_number)
     InsertQuestionIntoDB(question,table_name)
     first_table_number += 1
     print(table_name,' импортирована.')
+
+for question in column_questions_one_answer:
+    table_name = table_name_example + str(first_table_number)
+    InsertSingleAnswerQueIntoDB(question,table_name)
+    first_table_number += 1
+    print(table_name,' импортирована.')
+
+rpg_style_questions = (pd.read_excel(input_file, usecols=column_questions_answer_rpg_style, header=2,skiprows=0))
+rpg_style_questions = (rpg_style_questions.fillna(0).astype(int))
+rpg_stype_table = pd.concat([logins,rpg_style_questions], axis=1).drop(index=[0])
+rpg_stype_table_name = table_name_example + str(first_table_number)
+rpg_stype_table.to_sql(rpg_stype_table_name,con=engine,if_exists='replace')
