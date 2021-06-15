@@ -1,83 +1,139 @@
-from numpy import NaN, column_stack, inner
+from numpy import NaN, column_stack, empty, inner, nan
 import numpy as np
 import pandas as pd
 import re
+from operator import itemgetter
+from pymysql import NULL
 from classes import *
 from file_to_parse import *
 from sqlalchemy import create_engine
 from connection_params import db_creds,db_charset
 
 engine = create_engine(db_creds,encoding=db_charset)
-
 stuff_logins = (pd.read_excel(input_file_stuff, usecols=column_logins_stuff,header=2, skiprows=0,names=['logins']))          #Получаем логины
+chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))          #Получаем логины
 # dop_link = (pd.read_excel(input_file, usecols='E',header=2, skiprows=0,names=['Источник ответа']))
 # dop_link['Источник ответа'] = dop_link['Источник ответа'].str[13:]
 # logins = pd.concat([logins,dop_link],axis=1)
 # print (logins)
 
-def InsertQuestionIntoDB():
-    chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))          #Получаем логины
+def MergeChiefLogins():
+    chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))             #Получаем логины
+    dop_link = (pd.read_excel(input_file_chief, usecols=column_chief_dop_link,header=2, skiprows=0,names=['Источник ответа']))
+    dop_link['Источник ответа'] = dop_link['Источник ответа'].str[13:]
+    chief_logins = pd.concat([chief_logins,dop_link],axis=1)
+    return chief_logins
+
+#chief_logins = MergeChiefLogins()
+
+def InsertChiefQuestionIntoDB():
     for question in column_question_chief:
-        obj_question = DataFrame(input_file_chief,question[0], 2 ,0)
+        obj_question = QuestionSlice(input_file_chief,question[0], 2 ,0)
         obj_question = pd.concat([chief_logins,obj_question.transquetobin()], axis=1).drop(index=[0])
         table_name = table_name_chief_example+str(question[1])
         obj_question.to_sql(table_name,con=engine,if_exists='replace')
         print (table_name,' импортирована')
 
-def InsertSingleAnswerQueIntoDB():
-    chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))          #Получаем логины
+def InsertChiefSingleAnswerQueIntoDB():
     for question in column_question_chiefs_one_answer:
-        obj_question = DataFrame(input_file_chief,question[0], 2 ,0)
+        obj_question = QuestionSlice(input_file_chief,question[0], 2 ,0)
         obj_question = pd.concat([chief_logins,obj_question.createanswer()], axis=1).drop(index=[0])
         table_name = table_name_chief_example+str(question[1])
         obj_question.to_sql(table_name,con=engine,if_exists='replace')
         print (table_name, ' импортирована')
-#InsertQuestionIntoDB()
-InsertSingleAnswerQueIntoDB()
-#     question = (pd.read_excel(input_file, usecols=question_coords, header=2,skiprows=0))
-#     # Объединяем одинаковые столбцы
-#     items = question.columns.values.tolist()
-#     for i in range(len(items)):
-#         znak = items[i]
-#         for item in items:
-#             if znak.upper() == item[:-2].upper():
-#                 question[znak] = question[znak].combine_first(question[item])
-#                 del question[item]
-#     # Удаляем лишние символы в заголовках столбцов
-#     items = question.columns.values.tolist()                                                                        # Обновляем массив, так как могли быть удалены столбцы
-#     for item in range(len(items)):                                                                              # Проверка по регулярке на окончания типа .[0-9$]
-#         if re.search('\.[0-9]$', items[item]): 
-#             items[item] = items[item][:-2]
-#         items[item] = items[item][:64]                                                                          # Обрезаем имя столбца до 64 символов
-#     question.columns = items
-#     # Устанавливаем наличие ответов как 1, отсутствие - 0
-#     question = (question.replace('.*',1,regex=True))
-#     question = (question.fillna(0))
-#     question = (question.astype(int))
-#     # Склеиваем с логинами
-#     frames = pd.concat([logins,question], axis=1).drop(index=[0])
-#     # Кладём в бд, или ложим, или складываем, или слаживаем, пох
-#     frames.to_sql(tablename,con=engine,if_exists='replace')
-#     pass
 
-# def InsertSingleAnswerQueIntoDB(question_coords, tablename):
-#     single_answer_question = (pd.read_excel(input_file, usecols=question_coords, header=2,skiprows=0,names=['answer']))
-#     result_table = pd.concat([logins,single_answer_question], axis=1).drop(index=[0])
-#     result_table.to_sql(tablename,con=engine,if_exists='replace')
-    
-# for question in column_question:
-#     table_name = table_name_example + str(question[1])
-#     InsertQuestionIntoDB(question[0],table_name)
-#     print(table_name,' импортирована.')
+def InsertChiefRpgStyleQueIntoDB():
+    for question in column_question_chiefs_answer_rpg_style:
+        obj_queston = QuestionSlice(input_file_chief,question[0], 2, 0)
+        obj_queston = pd.concat([chief_logins,obj_queston.createrpganswer()], axis=1).drop(index=[0])
+        table_name = table_name_chief_example+str(question[1])
+        obj_queston.to_sql(table_name,con=engine,if_exists='replace')
+        print (table_name, ' импортирована')
 
-# for question in column_questions_one_answer:
-#     table_name = table_name_example + str(question[1])
-#     InsertSingleAnswerQueIntoDB(question[0],table_name)
-#     print(table_name,' импортирована.')
+#stuff
 
-# rpg_style_questions = (pd.read_excel(input_file, usecols=column_questions_answer_rpg_style[0], header=2,skiprows=0))
-# rpg_style_questions = (rpg_style_questions.fillna(0).astype(int))
-# rpg_stype_table = pd.concat([logins,rpg_style_questions], axis=1).drop(index=[0])
-# rpg_stype_table_name = table_name_example + str(column_questions_answer_rpg_style[1])
-# rpg_stype_table.to_sql(rpg_stype_table_name,con=engine,if_exists='replace')
-# print (chief_logins,'\n',stuff_logins)
+def InsertStuffQuestionIntoDB():
+    for question in column_question_stuff:
+        obj_question = QuestionSlice(input_file_stuff,question[0], 2 ,0)
+        obj_question = pd.concat([stuff_logins,obj_question.transquetobin()], axis=1).drop(index=[0])
+        table_name = table_name_stuff_example+str(question[1])
+        obj_question.to_sql(table_name,con=engine,if_exists='replace')
+        print (table_name,' импортирована')
+
+def InsertStuffSingleAnswerQueIntoDB():
+    for question in column_question_stuff_one_answer:
+        obj_question = QuestionSlice(input_file_stuff,question[0], 2 ,0)
+        obj_question = pd.concat([stuff_logins,obj_question.createanswer()], axis=1).drop(index=[0])
+        table_name = table_name_stuff_example+str(question[1])
+        obj_question.to_sql(table_name,con=engine,if_exists='replace')
+        print (table_name, ' импортирована')
+
+def InsertStuffRpgStyleQueIntoDB():
+    for question in column_question_stuff_answer_rpg_style:
+        obj_queston = QuestionSlice(input_file_stuff,question[0], 2, 0)
+        obj_queston = pd.concat([stuff_logins,obj_queston.createrpganswer()], axis=1).drop(index=[0])
+        table_name = table_name_stuff_example+str(question[1])
+        obj_queston.to_sql(table_name,con=engine,if_exists='replace')
+        print (table_name, ' импортирована')
+
+# InsertChiefRpgStyleQueIntoDB()
+# InsertChiefQuestionIntoDB()
+# InsertChiefSingleAnswerQueIntoDB()
+# InsertStuffRpgStyleQueIntoDB()
+# InsertStuffQuestionIntoDB()
+# InsertStuffSingleAnswerQueIntoDB()
+
+
+
+#all_chief_questtions = sorted(all_chief_questtions, key=itemgetter(1))
+# for question in all_chief_questtions:
+
+#testframe = pd.read_excel(input_file_chief, usecols='P:AI', header=2, skiprows=0)
+#testframe2 = pd.read_excel(input_file_chief, usecols='AJ:BK', header=2, skiprows=0)
+#testframe = QuestionSlice(input_file_chief, 'P:AI', 2, 0).concatcolumns()
+#testframe = testframe.concatcolumns()
+
+emptyarray = []
+questionname = []
+for i in all_chief_questtions:                                                                                          #Перебор столбцов для формирования таблички concat_table
+    question = QuestionSlice(input_file_chief, i[0],2,0)
+    questionname.append('Question'+str(i[1]))                                                                           #Создаём имя столбца
+    if i[1] in (11,16,21,41,43,44,45):
+        question = question.createanswer()
+        emptyarray.append(question)
+    elif i[1] == 23:
+        question = question.createrpganswer()
+        # Попытка сделать сортировку через списки
+        for header in question.columns:
+            for index in question.index:
+                question.loc[index,[header]] = f'{question.loc[index,[header]].values[0]} - {header}'
+        # data_list = question.values.tolist()
+        # for data in data_list:
+        #     data.sort(key= lambda x:str(x)[0])
+        # empty_frame = pd.DataFrame({'Question23': data_list}, index=None)
+        ############################################################################################
+        #question = pd.concat([chief_logins, question], axis=1).drop(index=[0])
+        question = question.T
+        print (question)
+        #emptyarray.append(empty_frame)
+
+        #empty_frame.astype(str).to_sql('blablabla',con=engine,if_exists='replace')
+        #emptyarray.append(empty_frame)
+        #print(empty_frame)
+        # b = (question.values.tolist())
+        # b = sorted(b, key=itemgetter(2))
+        #print (b)
+        #print (question.values.tolist()).sorted(key=itemgetter(2))
+        #empty_frame = pd.DataFrame({'Nazvanie_stolba': question.values.tolist()})
+        #empty_frame['Nazvanie_stolba'].apply(sorted)
+        #empty_frame['Nazvanie_stolba'].apply(lambda object: sorted(object, key = lambda cell_value: cell_value[0]))
+        #print(empty_frame)
+
+        #emptyarray.append(question)
+    else:
+        question = question.concatcolumns()
+        emptyarray.append(question)
+#result = pd.concat(emptyarray, axis=1)
+#result.columns = (questionname)
+#result.to_sql('testresult', con=engine,if_exists='replace')
+#print (result)

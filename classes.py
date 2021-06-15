@@ -1,4 +1,4 @@
-# from numpy.lib.arraypad import pad
+from numpy.lib.arraypad import pad
 import pandas as pd
 import re
 # from file_to_parse import *
@@ -38,6 +38,7 @@ class QuestionSlice():
 
     def createanswer(self):
         """Возвращает датафрейм с ответами"""
+        self.filebody.columns = ['answer']
         return self.filebody
 
     def createrpganswer(self):
