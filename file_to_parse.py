@@ -1,6 +1,6 @@
 
 # File structure Результаты_руководители
-input_file_chief = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_руководители_11.06.2021.xlsx"
+input_file_chief = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_руководители_15.06.2021.xlsx"
 #DB name table vars
 table_name_chief_example = 'questioning.chief.question'
 column_logins_chief = 'L'                         #Столбец логинов
@@ -37,7 +37,6 @@ column_question_chief.append (('ACH:ADA',38))      #Управление. Сер
 column_question_chief.append (('ADB:AEF',39))      #Управление. Формирование  (Множественный выбор)
 column_question_chief.append (('AEG:AFR',40))      #Перечислите информационные системы, которыми сотрудник регулярно пользуется при выполнении своих функций (Множественный выбор)
 column_question_chief.append (('AFT:AGH',42))      #Перечислите операционные системы, программное обеспечение, языки программирования в которых  сотрудник обладает экпертными навыками и регулярно использует в работе (Множественный выбор)
-
 # # Множественный ответ по шкале от 1 до 7 (без преобразования в бинарное)
 column_question_chiefs_answer_rpg_style = []
 column_question_chiefs_answer_rpg_style.append (('HM:HT',23))       #Какие характеристики из предложенных выражены в сотруднике в большей, а какие в меньшей степени? Проранжируйте от 1 до 8, где 1- максимально выраженная характеристика, а 8 - минимально выраженная характеристика. Используйте для этого стрелочки справа. (Ранжирование)
@@ -50,11 +49,12 @@ column_question_chiefs_one_answer.append (('AFS',41))     #Если сотруд
 column_question_chiefs_one_answer.append (('AGI',43))     #Если есть другие операционные системы, программые обеспечения, языки программирования, в которых сотрудник обладает экпертными навыками и регулярно использует в работе, укажите их через запятую. (Свободный ответ)
 column_question_chiefs_one_answer.append (('AGJ',44))        #Приходилось ли сотруднику выступать в роли наставника/ментора? как он с этим справлялся? (Одиночный выбор)
 column_question_chiefs_one_answer.append (('AGK',45))        #Кем вы видите сотрудника через 3 года (Одиночный выбор)
-#all_chief_questtions = column_question_chief + column_question_chiefs_answer_rpg_style + column_question_chiefs_one_answer
-all_chief_questtions = column_question_chiefs_answer_rpg_style
+# # Все вопросы chief
+all_chief_questions = column_question_chief + column_question_chiefs_answer_rpg_style + column_question_chiefs_one_answer
+
 
 # File structure Результаты_все_сотрудники
-input_file_stuff = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_все сотрудники_11.06.2021.xlsx"
+input_file_stuff = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_все сотрудники_15.06.2021.xlsx"
 column_logins_stuff = 'I'                                                                                         #Столбец логинов
 #DB name table vars
 table_name_stuff_example = 'questioning.staff.question'
@@ -109,4 +109,5 @@ column_question_stuff_one_answer.append (('AEX',47))  #Кем вы видите 
 column_question_stuff_one_answer.append (('AEY',48))  #Какой формат работы для вас был бы наиболее подходящим? (Одиночный выбор)
 column_question_stuff_one_answer.append (('AFB',50))  #Если на предыдущий вопрос вы ответили "да", укажите срок, в течении которого вы готовы к переезду (в месяцах). (Одиночный выбор)
 column_question_stuff_one_answer.append (('AFC',51))  #Укажите желаемый средний месячный доход по году, включая все премии и надбавки (на руки) (Свободный ответ)
+# # Все вопросы stuff
 all_stuff_questions = column_question_stuff + column_question_stuff_answer_rpg_style + column_question_stuff_one_answer

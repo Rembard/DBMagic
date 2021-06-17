@@ -10,21 +10,22 @@ from sqlalchemy import create_engine
 from connection_params import db_creds,db_charset
 
 engine = create_engine(db_creds,encoding=db_charset)
-stuff_logins = (pd.read_excel(input_file_stuff, usecols=column_logins_stuff,header=2, skiprows=0,names=['logins']))          #Получаем логины
-chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))          #Получаем логины
-# dop_link = (pd.read_excel(input_file, usecols='E',header=2, skiprows=0,names=['Источник ответа']))
-# dop_link['Источник ответа'] = dop_link['Источник ответа'].str[13:]
-# logins = pd.concat([logins,dop_link],axis=1)
-# print (logins)
+stuff_logins = (pd.read_excel(input_file_stuff, usecols=column_logins_stuff,header=2, skiprows=0,names=['logins']))      #Получаем логины
+chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))      #Получаем логины
+logins_concat_leftside_chief = (pd.read_excel(input_file_chief, usecols='A:C,G:H,J:O',header=2, skiprows=0, names=['id_answer', 'date_answer', 'time_answer', 'IP_hash', 'UA_hash','Login', 'FIO', 'Email', 'MRF', 'Region', 'Number']))
+logins_concat_leftside_stuff = (pd.read_excel(input_file_stuff, usecols='A:C,G:N',header=2, skiprows=0, names=['id_answer', 'date_answer', 'time_answer', 'IP_hash', 'UA_hash','Login', 'FIO', 'Email', 'MRF', 'Region', 'Number']))
+all_chief_questions = sorted(all_chief_questions, key=itemgetter(1))                                                     #Сортируем массив всех вопросов чифа
+all_stuff_questions = sorted(all_stuff_questions, key=itemgetter(1))                                                     #Сортируем массив всех вопросов стаффа
+
 
 def MergeChiefLogins():
-    chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))             #Получаем логины
+    chief_logins = (pd.read_excel(input_file_chief, usecols=column_logins_chief,header=2, skiprows=0,names=['logins']))  #Получаем логины
     dop_link = (pd.read_excel(input_file_chief, usecols=column_chief_dop_link,header=2, skiprows=0,names=['Источник ответа']))
     dop_link['Источник ответа'] = dop_link['Источник ответа'].str[13:]
     chief_logins = pd.concat([chief_logins,dop_link],axis=1)
     return chief_logins
 
-#chief_logins = MergeChiefLogins()
+chief_logins = MergeChiefLogins()
 
 def InsertChiefQuestionIntoDB():
     for question in column_question_chief:
@@ -76,64 +77,53 @@ def InsertStuffRpgStyleQueIntoDB():
         obj_queston.to_sql(table_name,con=engine,if_exists='replace')
         print (table_name, ' импортирована')
 
+def InsertContatChiefTable():
+    chief_contat_questions = []
+    chief_concat_columns = []
+    for i in all_chief_questions:                                                                                          #Перебор столбцов для формирования таблички concat_table
+        question = QuestionSlice(input_file_chief, i[0],2,0)
+        chief_concat_columns.append('Question'+str(i[1]))                                                                           #Создаём имя столбца
+        if i[1] in (11,16,21,41,43,44,45):
+            question = question.createanswer()
+            chief_contat_questions.append(question)
+        elif i[1] == 23:
+            question = question.sortrpganswer()
+            chief_contat_questions.append(question)
+        else:
+            question = question.concatcolumns()
+            chief_contat_questions.append(question)
+    chief_contat_questions = pd.concat(chief_contat_questions,axis=1)
+    chief_contat_questions.columns = (chief_concat_columns)
+    chief_contat_questions = pd.concat([logins_concat_leftside_chief,chief_contat_questions],axis=1).drop(index=[0])
+    chief_contat_questions.to_sql('questioning.chief.concat_table', con=engine,if_exists='replace')
+
+def InsertContatStuffTable():
+    stuff_contat_questions = []
+    stuff_concat_columns = []
+    for i in all_stuff_questions:                                                                                        #Перебор столбцов для формирования таблички concat_table
+        question = QuestionSlice(input_file_stuff, i[0],2,0)
+        stuff_concat_columns.append('Question'+str(i[1]))                                                                           #Создаём имя столбца
+        if i[1] in (10,15,20,40,42,44,45,46,47,48,50,51):
+            question = question.createanswer()
+            stuff_contat_questions.append(question)
+        elif i[1] == 22:
+            question = question.sortrpganswer()
+            stuff_contat_questions.append(question)
+        else:
+            question = question.concatcolumns()
+            stuff_contat_questions.append(question)
+    stuff_contat_questions = pd.concat(stuff_contat_questions,axis=1)
+    stuff_contat_questions.columns = (stuff_concat_columns)
+    stuff_contat_questions = pd.concat([logins_concat_leftside_stuff,stuff_contat_questions],axis=1).drop(index=[0])
+    stuff_contat_questions.to_sql('questioning.stuff.concat_table', con=engine,if_exists='replace')
+
 # InsertChiefRpgStyleQueIntoDB()
 # InsertChiefQuestionIntoDB()
 # InsertChiefSingleAnswerQueIntoDB()
 # InsertStuffRpgStyleQueIntoDB()
 # InsertStuffQuestionIntoDB()
 # InsertStuffSingleAnswerQueIntoDB()
+InsertContatChiefTable()
+InsertContatStuffTable()
 
 
-
-#all_chief_questtions = sorted(all_chief_questtions, key=itemgetter(1))
-# for question in all_chief_questtions:
-
-#testframe = pd.read_excel(input_file_chief, usecols='P:AI', header=2, skiprows=0)
-#testframe2 = pd.read_excel(input_file_chief, usecols='AJ:BK', header=2, skiprows=0)
-#testframe = QuestionSlice(input_file_chief, 'P:AI', 2, 0).concatcolumns()
-#testframe = testframe.concatcolumns()
-
-emptyarray = []
-questionname = []
-for i in all_chief_questtions:                                                                                          #Перебор столбцов для формирования таблички concat_table
-    question = QuestionSlice(input_file_chief, i[0],2,0)
-    questionname.append('Question'+str(i[1]))                                                                           #Создаём имя столбца
-    if i[1] in (11,16,21,41,43,44,45):
-        question = question.createanswer()
-        emptyarray.append(question)
-    elif i[1] == 23:
-        question = question.createrpganswer()
-        # Попытка сделать сортировку через списки
-        for header in question.columns:
-            for index in question.index:
-                question.loc[index,[header]] = f'{question.loc[index,[header]].values[0]} - {header}'
-        # data_list = question.values.tolist()
-        # for data in data_list:
-        #     data.sort(key= lambda x:str(x)[0])
-        # empty_frame = pd.DataFrame({'Question23': data_list}, index=None)
-        ############################################################################################
-        #question = pd.concat([chief_logins, question], axis=1).drop(index=[0])
-        question = question.T
-        print (question)
-        #emptyarray.append(empty_frame)
-
-        #empty_frame.astype(str).to_sql('blablabla',con=engine,if_exists='replace')
-        #emptyarray.append(empty_frame)
-        #print(empty_frame)
-        # b = (question.values.tolist())
-        # b = sorted(b, key=itemgetter(2))
-        #print (b)
-        #print (question.values.tolist()).sorted(key=itemgetter(2))
-        #empty_frame = pd.DataFrame({'Nazvanie_stolba': question.values.tolist()})
-        #empty_frame['Nazvanie_stolba'].apply(sorted)
-        #empty_frame['Nazvanie_stolba'].apply(lambda object: sorted(object, key = lambda cell_value: cell_value[0]))
-        #print(empty_frame)
-
-        #emptyarray.append(question)
-    else:
-        question = question.concatcolumns()
-        emptyarray.append(question)
-#result = pd.concat(emptyarray, axis=1)
-#result.columns = (questionname)
-#result.to_sql('testresult', con=engine,if_exists='replace')
-#print (result)

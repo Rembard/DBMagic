@@ -1,9 +1,8 @@
 from numpy.lib.arraypad import pad
 import pandas as pd
+import numpy as np
 import re
-# from file_to_parse import *
 
-# file = "C:\\Users\\artur.rakhmanov\\Projects\\DBMagic\\Результаты_все_сотрудники.xlsx"
 class QuestionSlice():
 
     def __init__(self, file, columns, header,skiprows):
@@ -13,7 +12,6 @@ class QuestionSlice():
         self.skiprows = skiprows
         self.filebody = pd.read_excel(self.file, usecols=self.columns, header=self.header, skiprows=self.skiprows)
         
-    
     def transquetobin(self):
         """Конкатит одинаковые столбцы, меняет ответы на бинарные, обрезает нумерацию столбцов от pandas"""
         column_names = self.filebody.columns.values.tolist()
@@ -31,6 +29,7 @@ class QuestionSlice():
             column_names[column] = column_names[column][:64]                                 # Обрезаем имя столбца до 64 символов
         self.filebody.columns = column_names
         # Устанавливаем наличие ответов как 1, отсутствие - 0
+        self.filebody = (self.filebody.replace('Нет',np.nan,regex=True))
         self.filebody = (self.filebody.replace('.*',1,regex=True))
         self.filebody = (self.filebody.fillna(0))
         self.filebody = (self.filebody.astype(int))
@@ -52,9 +51,14 @@ class QuestionSlice():
         self.filebody = self.filebody.astype('str').replace("nan",'')
         self.filebody = self.filebody.apply(lambda object: '\n'.join(list(filter(lambda a: a != '', object))), axis=1)
         return self.filebody
-    # def mergechieflogins(self):
-    #     """Объединяет столбцец логинов со столбцом Источник ответа"""
-    #     dop_link = (pd.read_excel(input_file_chief, usecols='E',header=2, skiprows=0,names=['Источник ответа']))
-    #     dop_link['Источник ответа'] = dop_link['Источник ответа'].str[13:]
-    #     self.filebody = pd.concat([self.filebody,dop_link],axis=1)
-    #     return self.filebody
+
+    def sortrpganswer(self):
+        self.filebody = (self.filebody.fillna(0).astype(int))
+        for header in self.filebody.columns:                                                         #Перебираем столбцы с ответами
+            for index in self.filebody.index:
+                self.filebody.loc[index,[header]] = f'{self.filebody.loc[index,[header]].values[0]} - {header}'   #Дописываем сам вопрос к значению
+        self.filebody = self.filebody.drop(index=0).T.reset_index()
+        for header in self.filebody.columns:
+            self.filebody[header] = self.filebody[header].sort_values(ignore_index=True)
+        self.filebody = self.filebody.T.apply('\n'.join, axis=1).reset_index(drop=True)
+        return self.filebody

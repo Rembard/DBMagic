@@ -1,11 +1,8 @@
 connection_params.py
 __pycache__
 .vscode
-Опросник.xlsx
-Результаты_все_сотрудники.xlsx
-Результаты_руководители.xlsx
-Результаты_все сотрудники_01.06.2021.xlsx
-Результаты_руководители_01.06.2021.xlsx
-classes.py
+*.xlsx
 .gitignore
-Результаты_все_сотрудники.zip
+*.zip
+oprosnik_chief.py
+test.py
